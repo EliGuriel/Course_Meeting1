@@ -26,7 +26,6 @@
     </packaging>
 
     <modules>
-        <module>Recap</module>
         <module>Stage1</module>
         <module>Stage2</module>
         <module>Stage3</module>
