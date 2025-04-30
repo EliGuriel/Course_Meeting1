@@ -1,0 +1,95 @@
+# בדיקות API למערכת ניהול תלמידים
+# עבור StudentController.java
+
+### שליפת כל התלמידים
+GET http://localhost:8080/student/getAllStudents
+Accept: application/json
+
+### הוספת תלמיד חדש
+POST http://localhost:8080/student/addStudent
+Content-Type: application/json
+
+{
+  "id": 99,
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "email": "israel@example.com",
+  "age": 20,
+  "grade": 85
+}
+
+### הוספת תלמיד שכבר קיים (נצפה לקבל שגיאה)
+POST http://localhost:8080/student/addStudent
+Content-Type: application/json
+
+{
+  "id": 99,
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "email": "israel@example.com",
+  "age": 20,
+  "grade": 85
+}
+
+### עדכון תלמיד קיים
+PUT http://localhost:8080/student/updateStudent/99
+Content-Type: application/json
+
+{
+  "id": 99,
+  "firstName": "ישראל",
+  "lastName": "ישראלי מעודכן",
+  "email": "israel.updated@example.com",
+  "age": 21,
+  "grade": 90
+}
+
+### עדכון תלמיד - אי התאמה בין ID בנתיב ל-ID בגוף הבקשה (נצפה לקבל שגיאה)
+PUT http://localhost:8080/student/updateStudent/99
+Content-Type: application/json
+
+{
+  "id": 99,
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "email": "israel@example.com",
+  "age": 20,
+  "grade": 85
+}
+
+### עדכון תלמיד שלא קיים (נצפה לקבל שגיאה)
+PUT http://localhost:8080/student/updateStudent/999
+Content-Type: application/json
+
+{
+  "id": 999,
+  "firstName": "לא",
+  "lastName": "קיים",
+  "email": "notexists@example.com",
+  "age": 25,
+  "grade": 70
+}
+
+### מחיקת תלמיד
+DELETE http://localhost:8080/student/deleteStudent/99
+
+### מחיקת תלמיד שלא קיים (נצפה לקבל שגיאה)
+DELETE http://localhost:8080/student/deleteStudent/999
+
+### בונוס: בדיקת הוספה ומחיקה ברצף
+# 1. הוספת תלמיד חדש
+POST http://localhost:8080/student/addStudent
+Content-Type: application/json
+
+{
+  "id": 99,
+  "firstName": "דוד",
+  "lastName": "כהן",
+  "email": "david@example.com",
+  "age": 19,
+  "grade": 95
+}
+
+### 2. מחיקת התלמיד שזה עתה נוסף
+# שים לב שיש להחליף את ה-ID במספר שהתקבל מהתגובה הקודמת
+DELETE http://localhost:8080/student/deleteStudent/99
