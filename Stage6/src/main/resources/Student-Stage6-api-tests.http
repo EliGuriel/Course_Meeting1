@@ -1,0 +1,337 @@
+# בדיקות API למערכת ניהול תלמידים - Stage 6
+# עבור StudentController.java עם StandardResponse ו-ResponseEntity<StandardResponse>
+
+### שליפת כל התלמידים
+GET http://localhost:8080/student/getAllStudents
+Accept: application/json
+# תגובה צפויה:
+# {
+#   "status": "success",
+#   "data": [
+#     {
+#       "id": 1,
+#       "firstName": "Alice",
+#       "lastName": "Moskovitz",
+#       "age": 21.3
+#     },
+#     ...
+#   ],
+#   "error": null,
+#   "timestamp": "2023-08-06T15:22:45.123"
+# }
+
+### שליפת תלמיד לפי מזהה
+GET http://localhost:8080/student/getStudent/1
+Accept: application/json
+# תגובה צפויה:
+# {
+#   "status": "success",
+#   "data": {
+#     "id": 1,
+#     "firstName": "Alice",
+#     "lastName": "Moskovitz",
+#     "age": 21.3
+#   },
+#   "error": null,
+#   "timestamp": "2023-08-06T15:22:45.123"
+# }
+
+### שליפת תלמיד שלא קיים (נצפה לקבל שגיאת NotExists)
+GET http://localhost:8080/student/getStudent/999
+Accept: application/json
+# תגובה צפויה:
+# {
+#   "status": "error",
+#   "data": null,
+#   "error": {
+#     "type": "Resource Not Found",
+#     "message": "Student with id 999 does not exist"
+#   },
+#   "timestamp": "2023-08-06T15:26:45.123"
+# }
+
+### הוספת תלמיד חדש - תקין
+POST http://localhost:8080/student/addStudent
+Content-Type: application/json
+
+{
+  "id": 99,
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": 20
+}
+
+# תגובה צפויה:
+# {
+#   "status": "success",
+#   "data": {
+#     "id": 99,
+#     "firstName": "ישראל",
+#     "lastName": "ישראלי",
+#     "age": 20
+#   },
+#   "error": null,
+#   "timestamp": "2023-08-06T15:25:45.123"
+# }
+
+### הוספת תלמיד - שגיאת ולידציה (שם ריק)
+POST http://localhost:8080/student/addStudent
+Content-Type: application/json
+
+{
+  "id": 100 ,
+  "firstName": "",
+  "lastName": "ישראלי",
+  "age": 20
+}
+# תגובה צפויה:
+# {
+#   "status": "error",
+#   "data": null,
+#   "error": {
+#     "type": "Validation Failed",
+#     "fields": {
+#       "firstName": "First name is required"
+#     }
+#   },
+#   "timestamp": "2023-08-06T15:26:45.123"
+# }
+
+### הוספת תלמיד - שגיאת ולידציה (שם קצר מדי)
+POST http://localhost:8080/student/addStudent
+Content-Type: application/json
+
+{
+  "id": 100 ,
+  "firstName": "י",
+  "lastName": "ישראלי",
+  "age": 20
+}
+# תגובה צפויה:
+# {
+#   "status": "error",
+#   "data": null,
+#   "error": {
+#     "type": "Validation Failed",
+#     "fields": {
+#       "firstName": "First name must be between 2 and 50 characters"
+#     }
+#   },
+#   "timestamp": "2023-08-06T15:26:45.123"
+# }
+
+### הוספת תלמיד - שגיאת ולידציה (גיל שלילי)
+POST http://localhost:8080/student/addStudent
+Content-Type: application/json
+
+{
+  "id": 100 ,
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": -5
+}
+# תגובה צפויה:
+# {
+#   "status": "error",
+#   "data": null,
+#   "error": {
+#     "type": "Validation Failed",
+#     "fields": {
+#       "age": "Age must be a positive number"
+#     }
+#   },
+#   "timestamp": "2023-08-06T15:26:45.123"
+# }
+
+### הוספת תלמיד עם מזהה שכבר קיים (נצפה לקבל שגיאת AlreadyExists)
+POST http://localhost:8080/student/addStudent
+Content-Type: application/json
+
+{
+  "id": 99,
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": 20
+}
+# תגובה צפויה:
+# {
+#   "status": "error",
+#   "data": null,
+#   "error": {
+#     "type": "Resource Conflict",
+#     "message": "Student with id 99 already exists"
+#   },
+#   "timestamp": "2023-08-06T15:26:45.123"
+# }
+
+### עדכון תלמיד קיים
+PUT http://localhost:8080/student/updateStudent/99
+Content-Type: application/json
+
+{
+  "id": 99,
+  "firstName": "ישראל",
+  "lastName": "ישראלי מעודכן",
+  "age": 21
+}
+# תגובה צפויה:
+# {
+#   "status": "success",
+#   "data": {
+#     "id": 99,
+#     "firstName": "ישראל",
+#     "lastName": "ישראלי מעודכן",
+#     "age": 21
+#   },
+#   "error": null,
+#   "timestamp": "2023-08-06T15:25:45.123"
+# }
+
+### עדכון תלמיד - אי התאמה בין ID בנתיב ל-ID בגוף הבקשה (נצפה לקבל שגיאת StudentIdAndIdMismatch)
+PUT http://localhost:8080/student/updateStudent/99
+Content-Type: application/json
+
+{
+  "id": 2,
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": 20
+}
+# תגובה צפויה:
+# {
+#   "status": "error",
+#   "data": null,
+#   "error": {
+#     "type": "ID Mismatch",
+#     "message": "Student with id 99 mismatch with body id 2"
+#   },
+#   "timestamp": "2023-08-06T15:26:45.123"
+# }
+
+### עדכון תלמיד שלא קיים (נצפה לקבל שגיאת NotExists)
+PUT http://localhost:8080/student/updateStudent/999
+Content-Type: application/json
+
+{
+  "id": 999,
+  "firstName": "לא",
+  "lastName": "קיים",
+  "age": 25
+}
+# תגובה צפויה:
+# {
+#   "status": "error",
+#   "data": null,
+#   "error": {
+#     "type": "Resource Not Found",
+#     "message": "Student with id 999 does not exist"
+#   },
+#   "timestamp": "2023-08-06T15:26:45.123"
+# }
+
+### עדכון תלמיד - שגיאת ולידציה (שם ריק)
+PUT http://localhost:8080/student/updateStudent/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "firstName": "",
+  "lastName": "ישראלי",
+  "age": 20
+}
+# תגובה צפויה:
+# {
+#   "status": "error",
+#   "data": null,
+#   "error": {
+#     "type": "Validation Failed",
+#     "fields": {
+#       "firstName": "First name is required"
+#     }
+#   },
+#   "timestamp": "2023-08-06T15:26:45.123"
+# }
+
+### מחיקת תלמיד
+DELETE http://localhost:8080/student/deleteStudent/99
+# תגובה צפויה: 204 No Content
+
+### מחיקת תלמיד שלא קיים (נצפה לקבל שגיאת NotExists)
+DELETE http://localhost:8080/student/deleteStudent/999
+# תגובה צפויה:
+# {
+#   "status": "error",
+#   "data": null,
+#   "error": {
+#     "type": "Resource Not Found",
+#     "message": "Student with id 999 does not exist"
+#   },
+#   "timestamp": "2023-08-06T15:26:45.123"
+# }
+
+### בדיקת תרחיש מלא: הוספה, שליפה, עדכון ומחיקה
+# 1. הוספת תלמיד חדש
+POST http://localhost:8080/student/addStudent
+Content-Type: application/json
+
+{
+  "id": 999,
+  "firstName": "דוד",
+  "lastName": "כהן",
+  "age": 19
+}
+# תגובה צפויה:
+# {
+#   "status": "success",
+#   "data": {
+#     "id": 999,
+#     "firstName": "דוד",
+#     "lastName": "כהן",
+#     "age": 19
+#   },
+#   "error": null,
+#   "timestamp": "2023-08-06T15:25:45.123"
+# }
+
+### 2. שליפת התלמיד שהתווסף
+GET http://localhost:8080/student/getStudent/999
+Accept: application/json
+# תגובה צפויה:
+# {
+#   "status": "success",
+#   "data": {
+#     "id": 999,
+#     "firstName": "דוד",
+#     "lastName": "כהן",
+#     "age": 19
+#   },
+#   "error": null,
+#   "timestamp": "2023-08-06T15:22:45.123"
+# }
+
+### 3. עדכון התלמיד
+PUT http://localhost:8080/student/updateStudent/999
+Content-Type: application/json
+
+{
+  "id": 999,
+  "firstName": "דוד",
+  "lastName": "כהן מעודכן",
+  "age": 20
+}
+# תגובה צפויה:
+# {
+#   "status": "success",
+#   "data": {
+#     "id": 999,
+#     "firstName": "דוד",
+#     "lastName": "כהן מעודכן",
+#     "age": 20
+#   },
+#   "error": null,
+#   "timestamp": "2023-08-06T15:25:45.123"
+# }
+
+### 4. מחיקת התלמיד
+DELETE http://localhost:8080/student/deleteStudent/999
+# תגובה צפויה: 204 No Content

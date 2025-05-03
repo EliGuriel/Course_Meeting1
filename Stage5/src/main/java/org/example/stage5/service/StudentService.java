@@ -50,12 +50,11 @@ public class StudentService {
         return student;
     }
 
-    public Student deleteStudent(Long id) {
+    public void deleteStudent(Long id) {
         // check if a student exists
         if (students.stream().noneMatch(s -> s.getId().equals(id))) {
             throw new NotExists ("Student with id " + id + " does not exist");
         }
         students.removeIf(s -> s.getId().equals(id));
-        return null;
     }
 }

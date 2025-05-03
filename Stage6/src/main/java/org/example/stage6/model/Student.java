@@ -6,11 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/*
-   Lombok, a boilerplate code reduction library, is used to generate the getters, setters, equals, hashcode, and toString methods.
-
-   Jakarta Bean Validation - added to validate the fields of the Student class.
-*/
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,8 +16,6 @@ public class Student {
     private Long id;
 
     @NotBlank(message = "First name is required")
-    @NotBlank
-    @NotEmpty
     @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
     private String firstName;
 

@@ -32,7 +32,6 @@
         <module>Stage4</module>
         <module>Stage5</module>
         <module>Stage6</module>
-        <module>Stage7</module>
     </modules>
 
     <scm>

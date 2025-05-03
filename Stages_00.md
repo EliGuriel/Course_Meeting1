@@ -191,11 +191,11 @@ flowchart TD
 - ResponseEntity
 - HTTP Status Codes
 
-### שלב 6: טיפול גלובלי בחריגות ותגובות אחידות
+### שלב 6: טיפול גלובלי בחריגות ומנגנון תגובות אחיד
 
 ```mermaid
 flowchart TD
-    Stage6["שלב 6: טיפול גלובלי בחריגות ותגובות אחידות"] --> Components["רכיבים חדשים ומשופרים"]
+    Stage6["שלב 6: טיפול גלובלי בחריגות ומנגנון תגובות אחיד"] --> Components["רכיבים חדשים ומשופרים"]
     
     Components --> StandardResponse["StandardResponse"]
     StandardResponse --> ResponseFields["שדות:<br>status<br>data<br>error<br>timestamp"]
@@ -209,88 +209,52 @@ flowchart TD
     Validation --> ValidationHandler["טיפול בשגיאות ולידציה"]
     
     Components --> Controller["Controller"]
-    Controller --> CleanController["אין טיפול בחריגות<br>בתוך הקונטרולר"]
-    Controller --> ServiceCalls["קריאות ישירות לשירות<br>ללא try-catch"]
+    Controller --> UnifiedResponses["החזרת ResponseEntity<StandardResponse>"]
+    Controller --> ConsistentPattern["דפוס עקבי לכל התגובות"]
+    Controller --> StatusCodes["קודי סטטוס HTTP מותאמים"]
+    Controller --> NoErrorHandling["ללא טיפול בחריגות<br>רק העברתן למטפל הגלובלי"]
     
     Stage6 --> Features["שיפורים מרכזיים"]
+    Features --> UnifiedResponseFormat["פורמט תגובה אחיד לכל הבקשות"]
     Features --> CentralizedHandling["טיפול מרכזי בחריגות"]
-    Features --> ConsistentResponses["תגובות שגיאה עקביות"]
+    Features --> StandardResponseObj["עטיפת כל התגובות ב-StandardResponse"]
     Features --> SeparationOfConcerns["הפרדת אחריות טובה יותר"]
     Features --> CleanerCode["קוד קונטרולר נקי יותר"]
     
     classDef highlight fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,color:#000000,font-weight:bold
-    classDef adviceHighlight fill:#606060,stroke:#000000,stroke-width:2px
-    class Stage6,Components,Controller,Features highlight
-    class ExceptionHandler,ControllerAdvice,ExHandlerMethods,StandardResponse adviceHighlight
-```
-
-בשלב זה אנו:
-1. מעבירים את טיפול החריגות מהקונטרולרים למחלקה גלובלית אחת (GlobalExceptionHandler)
-2. משתמשים ב-@ControllerAdvice לטיפול מרכזי בחריגות
-3. יוצרים מחלקת StandardResponse למבנה אחיד של תגובות (בינתיים רק לשגיאות)
-4. מוסיפים ולידציה בסיסית עם אנוטציות והטיפול בשגיאות ולידציה ב-GlobalExceptionHandler
-
-**קונספטים מרכזיים:**
-- @ControllerAdvice
-- @ExceptionHandler
-- Global Exception Handling
-- Standardized Error Responses
-- Bean Validation
-
-### שלב 7: מנגנון תגובות אחיד עם GlobalResponseHandler
-
-```mermaid
-flowchart TD
-    Stage7["שלב 7: מנגנון תגובות אחיד עם GlobalResponseHandler"] --> Components["רכיבים חדשים ומשופרים"]
-    
-    Components --> ResponseHandler["GlobalResponseHandler"]
-    ResponseHandler --> ResponseBodyAdvice["implements ResponseBodyAdvice<Object>"]
-    ResponseHandler --> HandlerMethods["מתודות:<br>- supports()<br>- beforeBodyWrite()"]
-    
-    Components --> ServiceInterfaces["Service Interfaces"]
-    ServiceInterfaces --> CompleteInterfaces["ממשקי שירות מלאים<br>עם Javadoc"]
-    ServiceInterfaces --> DTOUsage["שימוש מלא ב-DTO"]
-    
-    Components --> ExceptionHandling["Exception Handling"]
-    ExceptionHandling --> EnhancedErrors["תגובות שגיאה מפורטות"]
-    ExceptionHandling --> ValidationMapping["מיפוי שגיאות ולידציה לפי שדה"]
-    
-    Stage7 --> Features["שיפורים מרכזיים"]
-    Features --> UnifiedResponses["תגובות אחידות לכל סוגי הבקשות"]
-    Features --> AutomaticWrapping["עטיפה אוטומטית של תגובות"]
-    Features --> CompleteInterfaces["ממשקי שירות מלאים ומתועדים"]
-    Features --> DetailedErrors["פירוט שגיאות ולידציה לכל שדה בנפרד"]
-    Features --> SpecialHandling["טיפול מיוחד בתגובות 204"]
-    
-    classDef highlight fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,color:#000000,font-weight:bold
     classDef responseHighlight fill:#606060,stroke:#000000,stroke-width:2px
-    class Stage7,Components,Features highlight
-    class ResponseHandler,ResponseBodyAdvice,HandlerMethods responseHighlight
+    classDef standardResponse fill:#00C853,stroke:#000000,stroke-width:2px,color:#000000,font-weight:bold
+    class Stage6,Components,Controller,Features highlight
+    class ExceptionHandler,ControllerAdvice,ExHandlerMethods responseHighlight
+    class StandardResponse,ResponseFields,UnifiedResponses,ConsistentPattern,UnifiedResponseFormat,StandardResponseObj standardResponse
 ```
 
 בשלב זה אנו:
-1. מוסיפים GlobalResponseHandler ליצירת מנגנון תגובות אחיד לכל סוגי הבקשות (הצלחה ושגיאה)
-2. מיישמים ממשק ResponseBodyAdvice לעטיפה אוטומטית של כל התגובות במבנה StandardResponse
-3. משפרים את השימוש בממשקי שירות עם תיעוד Javadoc מפורט
-4. מרחיבים את מיפוי שגיאות הולידציה לפי שדה
-5. מוסיפים טיפול מיוחד בתגובות 204 (No Content)
+1. יוצרים מחלקת StandardResponse למבנה אחיד של כל סוגי התגובות - הצלחה ושגיאה
+2. מעבירים את כל הבקרים להחזיר ResponseEntity<StandardResponse> במקום ResponseEntity<T>
+3. מיישמים @ControllerAdvice לטיפול מרכזי וגלובלי בחריגות
+4. מוסיפים קודי סטטוס HTTP מתאימים לכל סוגי התגובות (200, 201, 204, 400, 404, 409, 500)
+5. מנקים את הקונטרולרים מטיפול ידני בחריגות
+6. מוסיפים ולידציה עם אנוטציות והטיפול בשגיאות ולידציה ב-GlobalExceptionHandler
 
 **קונספטים מרכזיים:**
-- ResponseBodyAdvice
-- Unified API Responses
-- Aspect-Oriented Programming (AOP)
-- RESTful API Best Practices
-- No-Content (204) Response Handling
+- StandardResponse כמבנה תגובה אחיד
+- ResponseEntity<StandardResponse> לעקביות
+- @ControllerAdvice לטיפול גלובלי בחריגות
+- @ExceptionHandler לתפיסת סוגי חריגות מוגדרים
+- קודי סטטוס HTTP מותאמים
+- טיפול מרכזי בשגיאות ולידציה
+- אנוטציות ולידציה ב-DTO
 
 ## שלבים עתידיים אפשריים
 
-### שלב 8: שכבת גישה לנתונים (Data Access Layer)
+### שלב 7: שכבת גישה לנתונים (Data Access Layer)
 התחברות למסד נתונים אמיתי באמצעות Spring Data JPA / Hibernate.
 
-### שלב 9: אבטחה (Security)
+### שלב 8: אבטחה (Security)
 הוספת אבטחה באמצעות Spring Security, אימות משתמשים והרשאות.
 
-### שלב 10: מיקרוסרוויסים ו-Cloud Native
+### שלב 9: מיקרוסרוויסים ו-Cloud Native
 פיתוח ארכיטקטורת מיקרוסרוויסים עם תמיכה במאפייני Cloud Native.
 
 </div>
