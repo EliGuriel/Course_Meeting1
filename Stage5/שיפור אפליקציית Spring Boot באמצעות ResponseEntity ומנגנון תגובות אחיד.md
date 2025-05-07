@@ -146,6 +146,8 @@ public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
 <div dir="rtl">
 
 ## חלק 3: ניתוח הקוד הנוכחי והשיפורים הדרושים
+`ניישם אותם בשלבים הבאים`
+
 
 ### 1. שימוש בהזרקת תלויות (ממומש היטב)
 

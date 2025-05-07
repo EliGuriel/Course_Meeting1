@@ -3,59 +3,64 @@
 # מפת דרכים לפיתוח אפליקציית CRUD ב-Spring Boot
 
 ## סקירה כללית
-מסמך זה מתאר את המסלול המדורג לפיתוח אפליקציית CRUD מלאה ב-Spring Boot, החל מיישום בסיסי ביותר ועד ליישום מתקדם עם טיפול בחריגות, ולידציה, ועקרונות ארכיטקטורה מודרניים.
+תיאור המסלול המדורג לפיתוח אפליקציית CRUD מלאה ב-Spring Boot, החל מיישום בסיסי ביותר ועד ליישום מתקדם עם טיפול בחריגות, ולידציה, ועקרונות ארכיטקטורה מודרניים.
 
 ## מסלול הפיתוח - סקירת השלבים
 
 ### שלב 1: אפליקציה בסיסית
 
+
 ```mermaid
 flowchart TD
     Stage1["שלב 1: אפליקציה בסיסית"] --> Main["מחלקה ראשית"]
-    Main --> SpringBootApp["@SpringBootApplication"]
+    Main --> SpringBootApp["SpringBootApplication@"]
     Main --> MainMethod["מתודת main"]
     Stage1 --> Features["מאפיינים"]
-    Features --> NoControllers["ללא קונטרולרים"]
-    Features --> NoEndpoints["ללא אנדפוינטים"]
+    Features --> NoControllers["ללא Controllers"]
+    Features --> NoEndpoints["ללא End Points"]
     Features --> NoServices["ללא שירותים"]
     Features --> AutoConfig["Auto-Configuration"]
 
-    classDef highlight fill:#e1f5fe,stroke:#000000,stroke-width:2px,color:#000000,font-weight:bold
-    class Stage1,Main,Features highlight
+    classDef existing fill:#00C853,stroke:#000000,stroke-width:2px,color:#000000,font-weight:bold
+    classDef nonexisting fill:#606060,stroke:#000000,stroke-width:2px,color:#FFFFFF
+    class Stage1,Main,SpringBootApp,MainMethod,Features,AutoConfig existing
+    class NoControllers,NoEndpoints,NoServices nonexisting
 ```
 
-בשלב זה אנו יוצרים רק את השלד המינימלי של אפליקציית Spring Boot - הקלאס הראשי עם האנוטציה `@SpringBootApplication`. זוהי אפליקציה שמתחילה לרוץ אך לא עושה שום דבר.
+בשלב זה אנו יוצרים רק את השלד המינימלי של אפליקציית Spring Boot - המחלקה הראשי עם האנוטציה `SpringBootApplication@`. זוהי אפליקציה שמתחילה לרוץ אך לא עושה שום דבר.
 
 **קונספטים מרכזיים:**
 - Spring Boot Auto-Configuration
 - נקודת כניסה לאפליקציה (Entry Point)
 
-### שלב 2: קונטרולר בסיסי
+### שלב 2: Controller בסיסי
 
 ```mermaid
 flowchart TD
-    Stage2["שלב 2: קונטרולר בסיסי"] --> Components["רכיבים"]
-    Components --> Main["מחלקה ראשית<br>@SpringBootApplication"]
-    Components --> WelcomeController["קונטרולר בסיסי<br>WelcomeController"]
+    Stage2["שלב 2: Controller בסיסי"] --> Components["רכיבים"]
+    Components --> Main["מחלקה ראשית<br>SpringBootApplication@"]
+    Components --> WelcomeController["Controller בסיסי<br>WelcomeController"]
 
     WelcomeController --> Annotations["אנוטציות"]
-    Annotations --> Controller["@Controller"]
-    Annotations --> RequestMapping["@RequestMapping('/welcome')"]
+    Annotations --> Controller["Controller@"]
+    Annotations --> RequestMapping["RequestMapping('/welcome')@"]
 
     WelcomeController --> Methods["מתודות"]
-    Methods --> GreetMethod["greet()<br>@ResponseBody<br>@RequestMapping('/greet')"]
+    Methods --> GreetMethod["greet()<br>ResponseBody@<br>RequestMapping('/greet')@"]
 
     Stage2 --> Features["מאפיינים"]
-    Features --> SimpleEndpoint["אנדפוינט פשוט"]
+    Features --> SimpleEndpoint["End Point פשוט"]
     Features --> TextResponse["תגובת טקסט"]
     Features --> NoModel["ללא מודלים"]
     Features --> NoService["ללא שכבת שירות"]
 
-    classDef highlight fill:#e1f5fe,stroke:#000000,stroke-width:2px,color:#000000,font-weight:bold
-    class Stage2,Components,Features highlight
+    classDef existing fill:#00C853,stroke:#000000,stroke-width:2px,color:#000000,font-weight:bold
+    classDef nonexisting fill:#606060,stroke:#000000,stroke-width:2px,color:#FFFFFF
+    class Stage2,Components,Main,WelcomeController,Annotations,Controller,RequestMapping,Methods,GreetMethod,Features,SimpleEndpoint,TextResponse existing
+    class NoModel,NoService nonexisting
 ```
 
-בשלב זה אנו מוסיפים קונטרולר פשוט עם אנדפוינט אחד שמחזיר טקסט. זוהי אפליקציית REST בסיסית ביותר.
+בשלב זה אנו מוסיפים Controller פשוט עם End Point אחד שמחזיר טקסט. זוהי אפליקציית REST בסיסית ביותר.
 
 **קונספטים מרכזיים:**
 - Spring MVC
@@ -63,6 +68,8 @@ flowchart TD
 - HTTP Request Handling
 
 ### שלב 3: ארכיטקטורת MVC בסיסית
+
+</div>
 
 ```mermaid
 flowchart TD
@@ -87,23 +94,28 @@ flowchart TD
     Stage3 --> Features["מאפיינים"]
     Features --> MVCArchitecture["ארכיטקטורת MVC"]
     Features --> Separation["הפרדה לשכבות"]
-    Features --> GetOnly["אנדפוינטים GET בלבד"]
+    Features --> GetOnly["End Points GET בלבד"]
     Features --> JSONResponse["תגובת JSON אוטומטית"]
 
-    classDef highlight fill:#e1f5fe,stroke:#000000,stroke-width:2px,color:#000000,font-weight:bold
-    class Stage3,Components,Model,Service,Controller,Features highlight
+    classDef existing fill:#00C853,stroke:#000000,stroke-width:2px,color:#000000,font-weight:bold
+    classDef nonexisting fill:#606060,stroke:#000000,stroke-width:2px,color:#FFFFFF
+    class Stage3,Components,Model,StudentClass,StudentFields,Getters,ToString,Service,StudentService,ServiceMethods,MockData,Controller,StudentController,ControllerMethods,ServiceInjection,Features,MVCArchitecture,Separation,GetOnly,JSONResponse existing
 ```
 
-בשלב זה אנו מיישמים ארכיטקטורת MVC עם הפרדה לשכבות: מודל, שירות וקונטרולר. אנו מממשים גם פונקציונליות בסיסית לקריאת נתונים.
+<div dir="rtl">
+
+בשלב זה אנו מיישמים ארכיטקטורת MVC עם הפרדה לשכבות: מודל, שירות וController. אנו מממשים גם פונקציונליות בסיסית לקריאת נתונים.
 
 **קונספטים מרכזיים:**
 - ארכיטקטורת Model-View-Controller (MVC)
 - הפרדה לשכבות (Separation of Concerns)
 - Data Models
 - Service Layer
-- @RestController
+- RestController@
 
 ### שלב 4: CRUD מלא עם שיפורים ארכיטקטוניים
+
+</div>
 
 ```mermaid
 flowchart TD
@@ -130,11 +142,12 @@ flowchart TD
     Features --> FullCRUD["תמיכה מלאה ב-CRUD"]
     Features --> SpecificMappings["אנוטציות ספציפיות למתודות HTTP"]
 
-    classDef highlight fill:#e1f5fe,stroke:#000000,stroke-width:2px,color:#000000,font-weight:bold
-    classDef interfaceHighlight fill:#606060,stroke:#000000,stroke-width:2px
-    class Stage4,Components,Model,Interface,ServiceImpl,Controller,Features highlight
-    class Interface,ServiceInterface,InterfaceMethods interfaceHighlight
+    classDef existing fill:#00C853,stroke:#000000,stroke-width:2px,color:#000000,font-weight:bold
+    classDef nonexisting fill:#606060,stroke:#000000,stroke-width:2px,color:#FFFFFF
+    class Stage4,Components,Model,StudentLombok,Interface,ServiceInterface,InterfaceMethods,ServiceImpl,ServiceClass,ImplementationMethods,Controller,CRUDController,ControllerMethods,Features,Lombok,InterfaceImpl,FullCRUD,SpecificMappings existing
 ```
+
+<div dir="rtl">
 
 בשלב זה אנו משדרגים את האפליקציה:
 1. מיישמים את כל פעולות ה-CRUD (יצירה, קריאה, עדכון, מחיקה)
@@ -149,6 +162,8 @@ flowchart TD
 - RESTful API Design
 
 ### שלב 5: טיפול בחריגות ושיפור תגובות ה-API
+
+</div>
 
 ```mermaid
 flowchart TD
@@ -174,14 +189,15 @@ flowchart TD
     Features --> ObjectResponses["החזרת אובייקטים במקום מחרוזות"]
     Features --> RESTful["עיצוב RESTful משופר"]
 
-    classDef highlight fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,color:#000000,font-weight:bold
-    classDef exceptionHighlight fill:#606060,stroke:#000000,stroke-width:2px
-    class Stage5,Components,ServiceImpl,Controller,Features highlight
-    class Exceptions,AlreadyExists,NotExists,IdMismatch,ThrowExceptions,TryCatch exceptionHighlight
+    classDef existing fill:#00C853,stroke:#000000,stroke-width:2px,color:#000000,font-weight:bold
+    classDef nonexisting fill:#606060,stroke:#000000,stroke-width:2px,color:#FFFFFF
+    class Stage5,Components,Exceptions,AlreadyExists,NotExists,IdMismatch,ServiceImpl,ThrowExceptions,Controller,TryCatch,ResponseEntity,HttpStatus,URIs,Features,BetterErrorHandling,AppropriateStatus,ObjectResponses,RESTful existing
 ```
 
+<div dir="rtl">
+
 בשלב זה אנו משפרים את:
-1. טיפול בחריגות - מוסיפים מחלקות חריגה ייעודיות ותופסים אותן בקונטרולר
+1. טיפול בחריגות - מוסיפים מחלקות חריגה ייעודיות ותופסים אותן בController
 2. תגובות ה-API - משתמשים ב-ResponseEntity לשליטה בקודי סטטוס ובגוף התגובה
 3. מחזירים אובייקטים מלאים במקום מחרוזות פשוטות
 
@@ -192,6 +208,8 @@ flowchart TD
 - HTTP Status Codes
 
 ### שלב 6: טיפול גלובלי בחריגות ומנגנון תגובות אחיד
+
+</div>
 
 ```mermaid
 flowchart TD
@@ -219,29 +237,28 @@ flowchart TD
     Features --> CentralizedHandling["טיפול מרכזי בחריגות"]
     Features --> StandardResponseObj["עטיפת כל התגובות ב-StandardResponse"]
     Features --> SeparationOfConcerns["הפרדת אחריות טובה יותר"]
-    Features --> CleanerCode["קוד קונטרולר נקי יותר"]
+    Features --> CleanerCode["קוד Controller נקי יותר"]
     
-    classDef highlight fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,color:#000000,font-weight:bold
-    classDef responseHighlight fill:#606060,stroke:#000000,stroke-width:2px
-    classDef standardResponse fill:#00C853,stroke:#000000,stroke-width:2px,color:#000000,font-weight:bold
-    class Stage6,Components,Controller,Features highlight
-    class ExceptionHandler,ControllerAdvice,ExHandlerMethods responseHighlight
-    class StandardResponse,ResponseFields,UnifiedResponses,ConsistentPattern,UnifiedResponseFormat,StandardResponseObj standardResponse
+    classDef existing fill:#00C853,stroke:#000000,stroke-width:2px,color:#000000,font-weight:bold
+    classDef nonexisting fill:#606060,stroke:#000000,stroke-width:2px,color:#FFFFFF
+    class Stage6,Components,StandardResponse,ResponseFields,ExceptionHandler,ControllerAdvice,ExHandlerMethods,Validation,DTOValidation,ValidationHandler,Controller,UnifiedResponses,ConsistentPattern,StatusCodes,NoErrorHandling,Features,UnifiedResponseFormat,CentralizedHandling,StandardResponseObj,SeparationOfConcerns,CleanerCode existing
 ```
+
+<div dir="rtl">
 
 בשלב זה אנו:
 1. יוצרים מחלקת StandardResponse למבנה אחיד של כל סוגי התגובות - הצלחה ושגיאה
 2. מעבירים את כל הבקרים להחזיר ResponseEntity<StandardResponse> במקום ResponseEntity<T>
-3. מיישמים @ControllerAdvice לטיפול מרכזי וגלובלי בחריגות
+3. מיישמים ControllerAdvice@ לטיפול מרכזי וגלובלי בחריגות
 4. מוסיפים קודי סטטוס HTTP מתאימים לכל סוגי התגובות (200, 201, 204, 400, 404, 409, 500)
-5. מנקים את הקונטרולרים מטיפול ידני בחריגות
+5. מנקים את ה Controller מטיפול ידני בחריגות
 6. מוסיפים ולידציה עם אנוטציות והטיפול בשגיאות ולידציה ב-GlobalExceptionHandler
 
 **קונספטים מרכזיים:**
 - StandardResponse כמבנה תגובה אחיד
 - ResponseEntity<StandardResponse> לעקביות
-- @ControllerAdvice לטיפול גלובלי בחריגות
-- @ExceptionHandler לתפיסת סוגי חריגות מוגדרים
+- ControllerAdvice@ לטיפול גלובלי בחריגות
+- ExceptionHandler@ לתפיסת סוגי חריגות מוגדרים
 - קודי סטטוס HTTP מותאמים
 - טיפול מרכזי בשגיאות ולידציה
 - אנוטציות ולידציה ב-DTO
